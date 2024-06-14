@@ -1,17 +1,17 @@
 apiVersion: data.packaging.carvel.dev/v1alpha1
 kind: Package
 metadata:
-  name: steeltoe-app-package.default.tap.20240614223432.0.0
+  name: steeltoe-app-package.default.tap.20240614230453.0.0
 spec:
   refName: steeltoe-app-package.default.tap
-  version: 20240614223432.0.0
+  version: 20240614230453.0.0
   releaseNotes: |
-    Release v20240614223432.0.0 of package steeltoe-app-package.default.tap
+    Release v20240614230453.0.0 of package steeltoe-app-package.default.tap
   template:
     spec:
       fetch:
       - imgpkgBundle:
-          image: us-west1-docker.pkg.dev/app-last-mile/nwebb/supply-chain-tests/steeltoe-app-package-bundle@sha256:c883889e60f7da7e7e605d13b7ab0dfa633f9e532be88e98e88ccb810f17c35b
+          image: us-west1-docker.pkg.dev/app-last-mile/nwebb/supply-chain-tests/steeltoe-app-package-bundle@sha256:c1f7e8cd20e2b654396aceabf60648a7423ea8d66b99753b54ba5660632189d9
       template:
       - ytt:
           paths:
