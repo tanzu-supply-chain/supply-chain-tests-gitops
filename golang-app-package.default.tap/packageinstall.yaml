@@ -6,7 +6,7 @@ spec:
   packageRef:
     refName: golang-app-package.default.tap
     versionSelection:
-      constraints: 20240614223425.0.0
+      constraints: 20240709195721.0.0
       prereleases: {}
   serviceAccountName: default
   values:

@@ -1,17 +1,17 @@
 apiVersion: data.packaging.carvel.dev/v1alpha1
 kind: Package
 metadata:
-  name: golang-app-package.default.tap.20240614223425.0.0
+  name: golang-app-package.default.tap.20240709195721.0.0
 spec:
   refName: golang-app-package.default.tap
-  version: 20240614223425.0.0
+  version: 20240709195721.0.0
   releaseNotes: |
-    Release v20240614223425.0.0 of package golang-app-package.default.tap
+    Release v20240709195721.0.0 of package golang-app-package.default.tap
   template:
     spec:
       fetch:
       - imgpkgBundle:
-          image: us-west1-docker.pkg.dev/app-last-mile/nwebb/supply-chain-tests/golang-app-package-bundle@sha256:72df15a3697ed5a17bf92e1ed3d9d708c4b6d5958b55919048524f5bc4e93e91
+          image: us-west1-docker.pkg.dev/app-last-mile/nwebb/supply-chain-tests/golang-app-package-bundle@sha256:9bbff6a3471151d5ce4d7225f1bcdc1b4a06ac43276dba692cc061a34a1e0f39
       template:
       - ytt:
           paths:
