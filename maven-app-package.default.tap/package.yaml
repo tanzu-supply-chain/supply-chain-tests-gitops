@@ -1,17 +1,17 @@
 apiVersion: data.packaging.carvel.dev/v1alpha1
 kind: Package
 metadata:
-  name: maven-app-package.default.tap.20240614223129.0.0
+  name: maven-app-package.default.tap.20240709205715.0.0
 spec:
   refName: maven-app-package.default.tap
-  version: 20240614223129.0.0
+  version: 20240709205715.0.0
   releaseNotes: |
-    Release v20240614223129.0.0 of package maven-app-package.default.tap
+    Release v20240709205715.0.0 of package maven-app-package.default.tap
   template:
     spec:
       fetch:
       - imgpkgBundle:
-          image: us-west1-docker.pkg.dev/app-last-mile/nwebb/supply-chain-tests/maven-app-package-bundle@sha256:6717592066327663d559f8436a974a265bc9d1beeb77882ca50dc875518a32a1
+          image: us-west1-docker.pkg.dev/app-last-mile/nwebb/supply-chain-tests/maven-app-package-bundle@sha256:94523818dd2a854a77a7cae781bd20de57c7c10e4081eadd78b17b4104d1b3bc
       template:
       - ytt:
           paths:
