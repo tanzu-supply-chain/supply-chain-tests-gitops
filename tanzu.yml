@@ -1,0 +1,5 @@
+apiVersion: config.tanzu.vmware.com/v1
+kind: TanzuConfig
+configuration:
+  projectRoot:
+    uuid: 4f8ccef2-58c1-40f0-9c8d-0ff6ed8331b6 # supply-chain-tests
