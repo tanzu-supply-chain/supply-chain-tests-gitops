@@ -1,0 +1,70 @@
+apiVersion: apps.tanzu.vmware.com/v1
+kind: ContainerApp
+metadata:
+  annotations:
+    apps.tanzu.vmware.com/promotable: ""
+    apps.tanzu.vmware.com/promote-group: ContainerApp/single-image-single-app
+    containerapp.apps.tanzu.vmware.com/class: kubernetes
+  name: single-image-single-app
+spec:
+  content:
+    buildTimestamp: "2024-08-13T23:00:01Z"
+    packageImage: us-central1-docker.pkg.dev/app-last-mile/ucp/ca-registry@sha256:9d194f82f0f3cc5bc7b3d95258b22cccf543c50058df46bdfafdac2b1228d084
+    packageRefName: single-image-single-app.apps.local
+    packageVersion: 20240813.2300.1802
+    summary: image:bd255a6 @ 2024-08-13T23:00:01Z
+    version: 20240813.2300.1802
+  health:
+    maxUnavailableReplicas: 10%
+  image: us-central1-docker.pkg.dev/app-last-mile/ucp/ca-registry@sha256:bd255a6f9444bbbd0606e2757eb876b7f6088c365bec2eafb515b7a9d9df1e15
+  nonSecretEnv:
+  - name: PORT
+    value: "8080"
+  ports:
+  - name: main
+    port: 8080
+  relatedRefs:
+  - for: kubernetes.list-replicas
+    kind: Pod
+    labelSelector: containerapp.apps.tanzu.vmware.com/app-name=single-image-single-app
+  - apiGroup: apps
+    for: kubernetes.service-binding-target
+    kind: Deployment
+    name: single-image-single-app
+  - for: kubernetes.service-target
+    kind: Service
+    name: single-image-single-app
+  - for: kubernetes.scale-replicas
+    keyPath: .data['values.yml']->[yaml].replicas
+    kind: Secret
+    name: single-image-single-app-values
+  - for: kubernetes.scale-resources
+    keyPath: .data['values.yml']->[yaml].resources
+    kind: Secret
+    name: single-image-single-app-values
+  - for: kubernetes.set-secret-env
+    keyPath: .data['values.yml']->[yaml].secretEnv
+    kind: Secret
+    name: single-image-single-app-values
+  - apiGroup: packaging.carvel.dev
+    for: kubernetes.delete
+    kind: PackageInstall
+    name: single-image-single-app
+  - apiGroup: data.packaging.carvel.dev
+    for: kubernetes.delete
+    kind: Package
+    name: single-image-single-app.apps.local.20240813.2300.1802
+  - for: kubernetes.delete
+    kind: Secret
+    name: single-image-single-app-values
+  - for: kubernetes.set-content-hash
+    keyPath: .data['values.yml']->[yaml].contentHash
+    kind: Secret
+    name: single-image-single-app-values
+  - for: kubernetes.set-content-version
+    keyPath: .data['values.yml']->[yaml].contentVersion
+    kind: Secret
+    name: single-image-single-app-values
+  resources:
+    cpu: 300m
+    memory: 1Gi
