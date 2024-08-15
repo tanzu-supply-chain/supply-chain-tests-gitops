@@ -1,0 +1,21 @@
+apiVersion: packaging.carvel.dev/v1alpha1
+kind: PackageInstall
+metadata:
+  annotations:
+    apps.tanzu.vmware.com/promotable: ""
+    apps.tanzu.vmware.com/promote-group: ContainerApp/crawler-python
+  creationTimestamp: null
+  name: crawler-python
+spec:
+  packageRef:
+    refName: crawler-python.apps.local
+    versionSelection:
+      constraints: 20240815.2335.37025
+  serviceAccountName: carvel-package-installer
+  values:
+  - secretRef:
+      name: crawler-python-values
+status:
+  conditions: null
+  friendlyDescription: ""
+  observedGeneration: 0

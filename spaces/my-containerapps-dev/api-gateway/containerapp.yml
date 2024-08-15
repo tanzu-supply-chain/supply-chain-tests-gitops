@@ -1,0 +1,90 @@
+apiVersion: apps.tanzu.vmware.com/v1
+kind: ContainerApp
+metadata:
+  annotations:
+    apps.tanzu.vmware.com/promotable: ""
+    apps.tanzu.vmware.com/promote-group: ContainerApp/api-gateway
+    containerapp.apps.tanzu.vmware.com/class: kubernetes
+  name: api-gateway
+spec:
+  content:
+    buildTimestamp: "2024-08-15T23:35:37Z"
+    packageImage: us-central1-docker.pkg.dev/app-last-mile/ucp/ca-registry@sha256:4621fe449865bb5d7daf74fe3dacb2cd09b9cf3349bec6a7560c522d5f97553d
+    packageRefName: api-gateway.apps.local
+    packageVersion: 20240815.2335.37025
+    summary: image:976edbb @ 2024-08-15T23:35:37Z
+    version: 20240815.2335.37025
+  health:
+    maxUnavailableReplicas: 10%
+  image: us-central1-docker.pkg.dev/app-last-mile/ucp/ca-registry@sha256:976edbb5e191ea570d0f2722ae76c527dd0af05462a267be5b596d7c1b01370e
+  nonSecretEnv:
+  - name: JAVA_TOOL_OPTIONS
+    value: -Dmanagement.endpoint.health.probes.add-additional-paths=true -Dmanagement.health.probes.enabled=true
+      -Dserver.port=8080
+  ports:
+  - name: main
+    port: 8080
+  probes:
+    liveness:
+      httpGet:
+        path: /livez
+        port: 8080
+        scheme: HTTP
+    readiness:
+      httpGet:
+        path: /readyz
+        port: 8080
+        scheme: HTTP
+    startup:
+      failureThreshold: 120
+      httpGet:
+        path: /readyz
+        port: 8080
+        scheme: HTTP
+      initialDelaySeconds: 1
+      periodSeconds: 1
+  relatedRefs:
+  - for: kubernetes.list-replicas
+    kind: Pod
+    labelSelector: containerapp.apps.tanzu.vmware.com/app-name=api-gateway
+  - apiGroup: apps
+    for: kubernetes.service-binding-target
+    kind: Deployment
+    name: api-gateway
+  - for: kubernetes.service-target
+    kind: Service
+    name: api-gateway
+  - for: kubernetes.scale-replicas
+    keyPath: .data['values.yml']->[yaml].replicas
+    kind: Secret
+    name: api-gateway-values
+  - for: kubernetes.scale-resources
+    keyPath: .data['values.yml']->[yaml].resources
+    kind: Secret
+    name: api-gateway-values
+  - for: kubernetes.set-secret-env
+    keyPath: .data['values.yml']->[yaml].secretEnv
+    kind: Secret
+    name: api-gateway-values
+  - apiGroup: packaging.carvel.dev
+    for: kubernetes.delete
+    kind: PackageInstall
+    name: api-gateway
+  - apiGroup: data.packaging.carvel.dev
+    for: kubernetes.delete
+    kind: Package
+    name: api-gateway.apps.local.20240815.2335.37025
+  - for: kubernetes.delete
+    kind: Secret
+    name: api-gateway-values
+  - for: kubernetes.set-content-hash
+    keyPath: .data['values.yml']->[yaml].contentHash
+    kind: Secret
+    name: api-gateway-values
+  - for: kubernetes.set-content-version
+    keyPath: .data['values.yml']->[yaml].contentVersion
+    kind: Secret
+    name: api-gateway-values
+  resources:
+    cpu: 300m
+    memory: 1Gi

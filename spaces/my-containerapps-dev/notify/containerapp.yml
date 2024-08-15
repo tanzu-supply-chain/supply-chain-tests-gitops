@@ -1,0 +1,90 @@
+apiVersion: apps.tanzu.vmware.com/v1
+kind: ContainerApp
+metadata:
+  annotations:
+    apps.tanzu.vmware.com/promotable: ""
+    apps.tanzu.vmware.com/promote-group: ContainerApp/notify
+    containerapp.apps.tanzu.vmware.com/class: kubernetes
+  name: notify
+spec:
+  content:
+    buildTimestamp: "2024-08-15T23:35:37Z"
+    packageImage: us-central1-docker.pkg.dev/app-last-mile/ucp/ca-registry@sha256:a47fe4aa7bb5bc93e655f060fe7c3cebe7da41a1cd5f02ad97d7bdf621463c3d
+    packageRefName: notify.apps.local
+    packageVersion: 20240815.2335.37025
+    summary: image:4263ebc @ 2024-08-15T23:35:37Z
+    version: 20240815.2335.37025
+  health:
+    maxUnavailableReplicas: 10%
+  image: us-central1-docker.pkg.dev/app-last-mile/ucp/ca-registry@sha256:4263ebc99b11b533ef2edbf0343e83fd192ee2d81e968f27f71c2420cc2a5bf1
+  nonSecretEnv:
+  - name: JAVA_TOOL_OPTIONS
+    value: -Dmanagement.endpoint.health.probes.add-additional-paths=true -Dmanagement.health.probes.enabled=true
+      -Dserver.port=8080
+  ports:
+  - name: main
+    port: 8080
+  probes:
+    liveness:
+      httpGet:
+        path: /livez
+        port: 8080
+        scheme: HTTP
+    readiness:
+      httpGet:
+        path: /readyz
+        port: 8080
+        scheme: HTTP
+    startup:
+      failureThreshold: 120
+      httpGet:
+        path: /readyz
+        port: 8080
+        scheme: HTTP
+      initialDelaySeconds: 1
+      periodSeconds: 1
+  relatedRefs:
+  - for: kubernetes.list-replicas
+    kind: Pod
+    labelSelector: containerapp.apps.tanzu.vmware.com/app-name=notify
+  - apiGroup: apps
+    for: kubernetes.service-binding-target
+    kind: Deployment
+    name: notify
+  - for: kubernetes.service-target
+    kind: Service
+    name: notify
+  - for: kubernetes.scale-replicas
+    keyPath: .data['values.yml']->[yaml].replicas
+    kind: Secret
+    name: notify-values
+  - for: kubernetes.scale-resources
+    keyPath: .data['values.yml']->[yaml].resources
+    kind: Secret
+    name: notify-values
+  - for: kubernetes.set-secret-env
+    keyPath: .data['values.yml']->[yaml].secretEnv
+    kind: Secret
+    name: notify-values
+  - apiGroup: packaging.carvel.dev
+    for: kubernetes.delete
+    kind: PackageInstall
+    name: notify
+  - apiGroup: data.packaging.carvel.dev
+    for: kubernetes.delete
+    kind: Package
+    name: notify.apps.local.20240815.2335.37025
+  - for: kubernetes.delete
+    kind: Secret
+    name: notify-values
+  - for: kubernetes.set-content-hash
+    keyPath: .data['values.yml']->[yaml].contentHash
+    kind: Secret
+    name: notify-values
+  - for: kubernetes.set-content-version
+    keyPath: .data['values.yml']->[yaml].contentVersion
+    kind: Secret
+    name: notify-values
+  resources:
+    cpu: 300m
+    memory: 1Gi
