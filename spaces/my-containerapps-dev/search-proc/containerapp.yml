@@ -1,0 +1,90 @@
+apiVersion: apps.tanzu.vmware.com/v1
+kind: ContainerApp
+metadata:
+  annotations:
+    apps.tanzu.vmware.com/promotable: ""
+    apps.tanzu.vmware.com/promote-group: ContainerApp/search-proc
+    containerapp.apps.tanzu.vmware.com/class: kubernetes
+  name: search-proc
+spec:
+  content:
+    buildTimestamp: "2024-08-19T22:33:42Z"
+    packageImage: us-central1-docker.pkg.dev/app-last-mile/ucp/ca-registry@sha256:bb2f92c34e3a21cceb9da17a3029cb5b5e291d5798d3c263e67b694fdfc12caa
+    packageRefName: search-proc.apps.local
+    packageVersion: 20240819.2233.42764
+    summary: image:bcb76c4 @ 2024-08-19T22:33:42Z
+    version: 20240819.2233.42764
+  health:
+    maxUnavailableReplicas: 10%
+  image: us-central1-docker.pkg.dev/app-last-mile/ucp/ca-registry@sha256:bcb76c4c263be74034130c3b12287d80a70a67e03b9d8204e4a102eb7c36ccf5
+  nonSecretEnv:
+  - name: JAVA_TOOL_OPTIONS
+    value: -Dmanagement.endpoint.health.probes.add-additional-paths=true -Dmanagement.health.probes.enabled=true
+      -Dserver.port=8080
+  ports:
+  - name: main
+    port: 8080
+  probes:
+    liveness:
+      httpGet:
+        path: /livez
+        port: 8080
+        scheme: HTTP
+    readiness:
+      httpGet:
+        path: /readyz
+        port: 8080
+        scheme: HTTP
+    startup:
+      failureThreshold: 120
+      httpGet:
+        path: /readyz
+        port: 8080
+        scheme: HTTP
+      initialDelaySeconds: 1
+      periodSeconds: 1
+  relatedRefs:
+  - for: kubernetes.list-replicas
+    kind: Pod
+    labelSelector: containerapp.apps.tanzu.vmware.com/app-name=search-proc
+  - apiGroup: apps
+    for: kubernetes.service-binding-target
+    kind: Deployment
+    name: search-proc
+  - for: kubernetes.service-target
+    kind: Service
+    name: search-proc
+  - for: kubernetes.scale-replicas
+    keyPath: .data['values.yml']->[yaml].replicas
+    kind: Secret
+    name: search-proc-values
+  - for: kubernetes.scale-resources
+    keyPath: .data['values.yml']->[yaml].resources
+    kind: Secret
+    name: search-proc-values
+  - for: kubernetes.set-secret-env
+    keyPath: .data['values.yml']->[yaml].secretEnv
+    kind: Secret
+    name: search-proc-values
+  - apiGroup: packaging.carvel.dev
+    for: kubernetes.delete
+    kind: PackageInstall
+    name: search-proc
+  - apiGroup: data.packaging.carvel.dev
+    for: kubernetes.delete
+    kind: Package
+    name: search-proc.apps.local.20240819.2233.42764
+  - for: kubernetes.delete
+    kind: Secret
+    name: search-proc-values
+  - for: kubernetes.set-content-hash
+    keyPath: .data['values.yml']->[yaml].contentHash
+    kind: Secret
+    name: search-proc-values
+  - for: kubernetes.set-content-version
+    keyPath: .data['values.yml']->[yaml].contentVersion
+    kind: Secret
+    name: search-proc-values
+  resources:
+    cpu: 300m
+    memory: 1Gi
