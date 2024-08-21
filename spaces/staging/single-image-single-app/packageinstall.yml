@@ -1,0 +1,21 @@
+apiVersion: packaging.carvel.dev/v1alpha1
+kind: PackageInstall
+metadata:
+  annotations:
+    apps.tanzu.vmware.com/promotable: ""
+    apps.tanzu.vmware.com/promote-group: ContainerApp/single-image-single-app
+  creationTimestamp: null
+  name: single-image-single-app
+spec:
+  packageRef:
+    refName: single-image-single-app.apps.local
+    versionSelection:
+      constraints: 20240821.2134.49954
+  serviceAccountName: carvel-package-installer
+  values:
+  - secretRef:
+      name: single-image-single-app-values
+status:
+  conditions: null
+  friendlyDescription: ""
+  observedGeneration: 0
