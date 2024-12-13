@@ -1,0 +1,90 @@
+apiVersion: apps.tanzu.vmware.com/v1
+kind: ContainerApp
+metadata:
+  annotations:
+    apps.tanzu.vmware.com/promotable: ""
+    apps.tanzu.vmware.com/promote-group: ContainerApp/availability
+    containerapp.apps.tanzu.vmware.com/class: kubernetes
+  name: availability
+spec:
+  content:
+    buildTimestamp: "2024-08-19T22:33:42Z"
+    packageImage: us-central1-docker.pkg.dev/app-last-mile/ucp/ca-registry@sha256:7c2cc184abaff4b186a0d9625dd70a18e799a0d7fc2e3d0a31b12cce3fde3822
+    packageRefName: availability.apps.local
+    packageVersion: 20240819.2233.42764
+    summary: image:761583c @ 2024-08-19T22:33:42Z
+    version: 20240819.2233.42764
+  health:
+    maxUnavailableReplicas: 10%
+  image: us-central1-docker.pkg.dev/app-last-mile/ucp/ca-registry@sha256:761583c68c39b3cdb97675c0049dc756444fd7e4c3d7650fd533804c6575f624
+  nonSecretEnv:
+  - name: JAVA_TOOL_OPTIONS
+    value: -Dmanagement.endpoint.health.probes.add-additional-paths=true -Dmanagement.health.probes.enabled=true
+      -Dserver.port=8080
+  ports:
+  - name: main
+    port: 8080
+  probes:
+    liveness:
+      httpGet:
+        path: /livez
+        port: 8080
+        scheme: HTTP
+    readiness:
+      httpGet:
+        path: /readyz
+        port: 8080
+        scheme: HTTP
+    startup:
+      failureThreshold: 120
+      httpGet:
+        path: /readyz
+        port: 8080
+        scheme: HTTP
+      initialDelaySeconds: 1
+      periodSeconds: 1
+  relatedRefs:
+  - for: kubernetes.list-replicas
+    kind: Pod
+    labelSelector: containerapp.apps.tanzu.vmware.com/app-name=availability
+  - apiGroup: apps
+    for: kubernetes.service-binding-target
+    kind: Deployment
+    name: availability
+  - for: kubernetes.service-target
+    kind: Service
+    name: availability
+  - for: kubernetes.scale-replicas
+    keyPath: .data['values.yml']->[yaml].replicas
+    kind: Secret
+    name: availability-values
+  - for: kubernetes.scale-resources
+    keyPath: .data['values.yml']->[yaml].resources
+    kind: Secret
+    name: availability-values
+  - for: kubernetes.set-secret-env
+    keyPath: .data['values.yml']->[yaml].secretEnv
+    kind: Secret
+    name: availability-values
+  - apiGroup: packaging.carvel.dev
+    for: kubernetes.delete
+    kind: PackageInstall
+    name: availability
+  - apiGroup: data.packaging.carvel.dev
+    for: kubernetes.delete
+    kind: Package
+    name: availability.apps.local.20240819.2233.42764
+  - for: kubernetes.delete
+    kind: Secret
+    name: availability-values
+  - for: kubernetes.set-content-hash
+    keyPath: .data['values.yml']->[yaml].contentHash
+    kind: Secret
+    name: availability-values
+  - for: kubernetes.set-content-version
+    keyPath: .data['values.yml']->[yaml].contentVersion
+    kind: Secret
+    name: availability-values
+  resources:
+    cpu: 300m
+    memory: 1Gi
